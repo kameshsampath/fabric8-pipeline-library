@@ -10,6 +10,8 @@ def call(body) {
     def artifactId
     def releaseVersion
     def docgenScript
+    //Array of Maven Profiles
+    def profiles
 
     kubernetes.pod('buildpod').withImage('fabric8/maven-builder:latest')
             .withPrivileged(true)
@@ -34,14 +36,17 @@ def call(body) {
 
         checkout scm: [$class          : 'GitSCM',
                        useRemoteConfigs: [[url: gitRepoUrl]],
-                       branches        : [[name: 'refs/tags/v' + releaseVersion]]],
+                       branches        : [[name: "refs/tags/v${releaseVersion}"]]],
                 changelog: false, poll: false
 
         if (docgenScript == null) {
-            //FIXME - have the profiles passed as parameter
-            sh 'mvn -Pdoc-html'
-            sh 'mvn -Pdoc-pdf'
-            //FIXME - check if gh-pages already exist if not create it
+            if (profiles == null) {
+                sh 'mvn -Pdoc-html,doc-pdf'
+            } else {
+                def argProfile = '-P' + profiles.join(",")
+                sh "mvn ${argProfile}"
+            }
+            //TODO - check if gh-pages already exist if not create it ??
             sh 'git clone -b gh-pages' + gitRepoUrl + ' gh-pages'
             sh 'cp -rv target/generated-docs/* gh-pages/'
             sh 'cd gh-pages'
