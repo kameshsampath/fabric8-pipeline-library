@@ -12,7 +12,7 @@ def call(body) {
 
     def project = config.project[0]
     def artifactId = config.artifactId
-    def docVersion = project[1]
+    def docVersion = config.project[1]
     def docgenScript = config.docgenScript ?: null
 
     //Array of Maven Profiles
@@ -42,7 +42,8 @@ def call(body) {
                     returnStdout: true).toString().trim()
 
             if (refGHPages?.trim()) {
-                sh 'git clone -b gh-pages ' + gitRepoUrl + ' gh-pages'
+                println(" GIT REPO 2 : ${gitRepoUrl}")
+                sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
                         'cd gh-pages && mv gh-pages/index.pdf ' + 'gh-pages/' + artifactId + '.pdf' + '2>/dev/null'
                 +' && git add --ignore-errors * && git commit -m "generated documentation" ' +
