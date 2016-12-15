@@ -36,18 +36,21 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
+            sh "echo gh-pages exists ? ${refGHPages}"
+
             if (refGHPages) {
                 sh 'git clone -b gh-pages ' + gitRepoUrl + ' gh-pages'
                 sh 'cp -rv target/generated-docs/* gh-pages/'
-                sh 'cd gh-pages && mv gh-pages/index.pdf '+'gh-pages/'+ artifactId + '.pdf'+'2>/dev/null'
+                sh 'cd gh-pages && mv gh-pages/index.pdf ' + 'gh-pages/' + artifactId + '.pdf' + '2>/dev/null'
+                +'git add --ignore-errors * && git commit -m "generated documentation" ' +
+                        '&& git push origin gh-pages'
             } else {
                 sh 'git checkout -b gh-pages'
                 sh 'cp -rv target/generated-docs/* .'
                 sh 'mv index.pdf ' + artifactId + '.pdf'
+                sh 'git add --ignore-errors * && git commit -m "generated documentation" ' +
+                        '&& git push origin gh-pages'
             }
-
-            sh 'cd gh-pages && git add --ignore-errors * && git commit -m "generated documentation" ' +
-                    '&& git push origin gh-pages'
 
         } else {
             sh "${docgenScript}"
