@@ -8,6 +8,7 @@ def call(body) {
     body()
 
     def project = config.project
+    println(" GIT PROJECT : ${project}")
     def artifactId = config.artifactId
     def docVersion = config.docVersion
     def docgenScript = config.docgenScript ?: null
@@ -16,6 +17,8 @@ def call(body) {
     def profiles
 
     def gitRepoUrl = "https://github.com/${project}.git"
+
+    println(" GIT REPO : ${gitRepoUrl}")
 
     container(name: 'maven') {
 
