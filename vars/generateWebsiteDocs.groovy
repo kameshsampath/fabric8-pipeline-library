@@ -40,10 +40,8 @@ def call(body) {
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
                         'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
-                sh("(git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
+                sh("cd gh-pages && (git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
                         "&& git push origin gh-pages")
-//                +' && (git add --ignore-errors * || true ) && git commit -m "generated documentation" ' +
-//                        ' && git push origin gh-pages'
             } else {
                 sh 'git checkout -b gh-pages'
                 sh 'cp -rv target/generated-docs/* .'
