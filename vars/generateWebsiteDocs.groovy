@@ -17,7 +17,7 @@ def call(body) {
     //Array of Maven Profiles
     def profiles
 
-    def gitRepoUrl = "https://github.com/${project}.git"
+    def gitRepoUrl = "git@github.com:${project}.git"
 
     container(name: 'maven') {
 
