@@ -7,9 +7,10 @@ def call(body) {
     body.delegate = config
     body()
 
-    def artifactId
-    def docVersion
-    def docgenScript
+    def artifactId = config.artifactId
+    def docVersion = config.docVersion
+    def docgenScript = config.docgenScript ?: null
+
     //Array of Maven Profiles
     def profiles
 
