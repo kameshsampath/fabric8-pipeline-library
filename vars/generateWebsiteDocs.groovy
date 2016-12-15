@@ -49,7 +49,7 @@ def call(body) {
                         "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
 
                 retry(3) {
-                    sh "cd gh-pages || git push origin gh-pages"
+                    sh "cd gh-pages && git push origin gh-pages"
                 }
 
             } else {
