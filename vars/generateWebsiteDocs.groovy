@@ -39,9 +39,9 @@ def call(body) {
             if (refGHPages?.trim()) {
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
-                        'cd gh-pages && mv index.pdf ' + artifactId + '.pdf' + ' 2>/dev/null '
-                +' && git add --ignore-errors * && git commit -m "generated documentation" ' +
-                        '&& git push origin gh-pages'
+                        'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
+                +' && (git add --ignore-errors * || true ) && git commit -m "generated documentation" ' +
+                        ' && git push origin gh-pages'
             } else {
                 sh 'git checkout -b gh-pages'
                 sh 'cp -rv target/generated-docs/* .'
