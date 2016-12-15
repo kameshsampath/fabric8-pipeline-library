@@ -11,8 +11,8 @@ def call(body) {
     def artifactId = config.artifactId
     def docVersion = config.project[1]
     def docgenScript = config.docgenScript ?: null
-    def gitUser = config.githubUser
-    def gitEmail = config.githubEmail
+    def gitUser = config.gitUser
+    def gitEmail = config.gitEmail
 
     //Array of Maven Profiles
     def profiles
@@ -46,8 +46,14 @@ def call(body) {
                         'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
 
                 sh "cd gh-pages && git config user.email ${gitEmail} && git config user.name ${gitUser} " +
-                        "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
-                        "&& git push origin gh-pages"
+                        "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
+
+                sh "cd gh-pages"
+
+                retry(3) {
+                    sh "git push origin gh-pages"
+                }
+
             } else {
 
                 sh 'git checkout -b gh-pages'
