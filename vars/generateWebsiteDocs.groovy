@@ -47,7 +47,7 @@ def call(body) {
             } else {
                 sh 'git checkout -b gh-pages'
                 sh 'cp -rv target/generated-docs/* .'
-                sh("('git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
+                sh("(git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
                         "&& git push origin gh-pages")
             }
 
