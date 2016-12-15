@@ -36,6 +36,9 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
+            sh "git config user.email fabric8-admin@googlegroups.com"
+            sh "git config user.name fabric8"
+
             if (refGHPages?.trim()) {
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
