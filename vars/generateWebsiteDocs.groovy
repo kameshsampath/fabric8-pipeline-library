@@ -13,51 +13,30 @@ def call(body) {
     //Array of Maven Profiles
     def profiles
 
-    kubernetes.pod('buildpod').withImage('fabric8/maven-builder:latest')
-            .withPrivileged(true)
-            .withHostPathMount('/var/run/docker.sock', '/var/run/docker.sock')
-            .withEnvVar('DOCKER_CONFIG', '/root/.docker/')
-            .withSecret('jenkins-maven-settings', '/root/.m2')
-            .withSecret('jenkins-ssh-config', '/root/.ssh')
-            .withSecret('jenkins-git-ssh', '/root/.ssh-git')
-            .withSecret('jenkins-release-gpg', '/root/.gnupg')
-            .withSecret('jenkins-docker-cfg', '/root/.docker')
-            .inside {
+    def gitRepoUrl = "https://github.com/${config.project}.git"
 
-        sh 'chmod 600 /root/.ssh-git/ssh-key'
-        sh 'chmod 600 /root/.ssh-git/ssh-key.pub'
-        sh 'chmod 700 /root/.ssh-git'
-        sh 'chmod 600 /root/.gnupg/pubring.gpg'
-        sh 'chmod 600 /root/.gnupg/secring.gpg'
-        sh 'chmod 600 /root/.gnupg/trustdb.gpg'
-        sh 'chmod 700 /root/.gnupg'
+    checkout scm: [$class          : 'GitSCM',
+                   useRemoteConfigs: [[url: gitRepoUrl]],
+                   branches        : [[name: "refs/tags/v${releaseVersion}"]]],
+            changelog: false, poll: false
 
-        def gitRepoUrl = "https://github.com/${config.project}.git"
-
-        checkout scm: [$class          : 'GitSCM',
-                       useRemoteConfigs: [[url: gitRepoUrl]],
-                       branches        : [[name: "refs/tags/v${releaseVersion}"]]],
-                changelog: false, poll: false
-
-        if (docgenScript == null) {
-            if (profiles == null) {
-                sh 'mvn -Pdoc-html,doc-pdf'
-            } else {
-                def argProfile = '-P' + profiles.join(",")
-                sh "mvn ${argProfile}"
-            }
-            //TODO - check if gh-pages already exist if not create it ??
-            sh 'git clone -b gh-pages' + gitRepoUrl + ' gh-pages'
-            sh 'cp -rv target/generated-docs/* gh-pages/'
-            sh 'cd gh-pages'
-            sh 'mv index.pdf ' + artifactId + '.pdf'
-            sh 'git add --ignore-errors *'
-            sh 'git commit -m "generated documentation'
-            sh 'git push origin gh-pages'
+    if (docgenScript == null) {
+        if (profiles == null) {
+            sh 'mvn -Pdoc-html,doc-pdf'
         } else {
-            sh "${docgenScript}"
+            def argProfile = '-P' + profiles.join(",")
+            sh "mvn ${argProfile}"
         }
-
+        //TODO - check if gh-pages already exist if not create it ??
+        sh 'git clone -b gh-pages' + gitRepoUrl + ' gh-pages'
+        sh 'cp -rv target/generated-docs/* gh-pages/'
+        sh 'cd gh-pages'
+        sh 'mv index.pdf ' + artifactId + '.pdf'
+        sh 'git add --ignore-errors *'
+        sh 'git commit -m "generated documentation'
+        sh 'git push origin gh-pages'
+    } else {
+        sh "${docgenScript}"
     }
 
 }
