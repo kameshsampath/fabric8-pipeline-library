@@ -27,10 +27,10 @@ def call(body) {
         if (docgenScript == null) {
             //if no profiles are passed we will try running doc-html, doc-pdf
             if (profiles == null) {
-                sh 'mvn -Pdoc-html,doc-pdf'
+                sh('mvn -Pdoc-html && mvn -Pdoc-pdf')
             } else {
-                def argProfile = '-P' + profiles.join(",")
-                sh "mvn ${argProfile}"
+                def mvnCmd = 'mvn -P' + profiles.join(" && mvn -P")
+                sh("mvn ${mvnCmd}")
             }
 
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
