@@ -7,9 +7,6 @@ def call(body) {
     body.delegate = config
     body()
 
-
-    println(" GIT PROJECT : ${config.project}")
-
     def project = config.project[0]
     def artifactId = config.artifactId
     def docVersion = config.project[1]
@@ -19,8 +16,6 @@ def call(body) {
     def profiles
 
     def gitRepoUrl = "https://github.com/${project}.git"
-
-    println(" GIT REPO : ${gitRepoUrl}")
 
     container(name: 'maven') {
 
@@ -42,10 +37,9 @@ def call(body) {
                     returnStdout: true).toString().trim()
 
             if (refGHPages?.trim()) {
-                println(" GIT REPO 2 : ${gitRepoUrl}")
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
-                        'cd gh-pages && mv gh-pages/index.pdf ' + 'gh-pages/' + artifactId + '.pdf' + '2>/dev/null'
+                        'cd gh-pages && mv index.pdf ' + artifactId + '.pdf' + ' 2>/dev/null '
                 +' && git add --ignore-errors * && git commit -m "generated documentation" ' +
                         '&& git push origin gh-pages'
             } else {
