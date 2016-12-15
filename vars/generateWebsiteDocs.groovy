@@ -7,10 +7,12 @@ def call(body) {
     body.delegate = config
     body()
 
-    def project = config.project
-    println(" GIT PROJECT : ${project}")
+
+    println(" GIT PROJECT : ${config.project}")
+
+    def project = config.project[0]
     def artifactId = config.artifactId
-    def docVersion = config.docVersion
+    def docVersion = project[1]
     def docgenScript = config.docgenScript ?: null
 
     //Array of Maven Profiles
