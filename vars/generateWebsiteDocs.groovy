@@ -38,16 +38,15 @@ def call(body) {
 
             sh "echo gh-pages exists ? ${refGHPages}"
 
-            if (refGHPages) {
+            if (refGHPages?.trim()) {
                 sh 'git clone -b gh-pages ' + gitRepoUrl + ' gh-pages'
                 sh 'cp -rv target/generated-docs/* gh-pages/'
                 sh 'cd gh-pages && mv gh-pages/index.pdf ' + 'gh-pages/' + artifactId + '.pdf' + '2>/dev/null'
-                +'git add --ignore-errors * && git commit -m "generated documentation" ' +
+                +' && git add --ignore-errors * && git commit -m "generated documentation" ' +
                         '&& git push origin gh-pages'
             } else {
                 sh 'git checkout -b gh-pages'
                 sh 'cp -rv target/generated-docs/* .'
-                sh 'mv index.pdf ' + artifactId + '.pdf'
                 sh 'git add --ignore-errors * && git commit -m "generated documentation" ' +
                         '&& git push origin gh-pages'
             }
