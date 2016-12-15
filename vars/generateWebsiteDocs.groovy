@@ -37,7 +37,6 @@ def call(body) {
                     returnStdout: true).toString().trim()
 
             if (refGHPages?.trim()) {
-                checkout scm
                 sh 'git clone -b gh-pages ' + gitRepoUrl + ' gh-pages'
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
                         'cd gh-pages && mv gh-pages/index.pdf ' + 'gh-pages/' + artifactId + '.pdf' + '2>/dev/null'
