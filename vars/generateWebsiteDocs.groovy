@@ -48,10 +48,8 @@ def call(body) {
                 sh "cd gh-pages && git config user.email ${gitEmail} && git config user.name ${gitUser} " +
                         "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
 
-                sh "cd gh-pages"
-
                 retry(3) {
-                    sh "git push origin gh-pages"
+                    sh "cd gh-pages || git push origin gh-pages"
                 }
 
             } else {
