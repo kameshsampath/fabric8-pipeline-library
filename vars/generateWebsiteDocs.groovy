@@ -11,6 +11,8 @@ def call(body) {
     def artifactId = config.artifactId
     def docVersion = config.project[1]
     def docgenScript = config.docgenScript ?: null
+    def gitUser = config.githubUser
+    def gitEmail = config.githubEmail
 
     //Array of Maven Profiles
     def profiles
@@ -37,18 +39,24 @@ def call(body) {
                     returnStdout: true).toString().trim()
 
             if (refGHPages?.trim()) {
+
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
+
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
                         'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
-                sh("cd gh-pages && git config user.email fabric8-admin@googlegroups.com && git config user.name fabric8 " +
+
+                sh "cd gh-pages && git config user.email ${gitEmail} && git config user.name ${gitUser} " +
                         "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
-                        "&& git push origin gh-pages")
+                        "&& git push origin gh-pages"
             } else {
+
                 sh 'git checkout -b gh-pages'
+
                 sh 'cp -rv target/generated-docs/* .'
-                sh("git config user.email fabric8-admin@googlegroups.com && git config user.name fabric8 && " +
+
+                sh "git config user.email ${gitEmail} && git config user.name ${gitUser} && " +
                         "(git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
-                        "&& git push origin gh-pages")
+                        "&& git push origin gh-pages"
             }
 
         } else {
