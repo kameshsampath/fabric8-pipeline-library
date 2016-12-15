@@ -8,7 +8,7 @@ def call(body) {
     body()
 
     def artifactId
-    def releaseVersion
+    def docVersion
     def docgenScript
     //Array of Maven Profiles
     def profiles
@@ -17,7 +17,7 @@ def call(body) {
 
     checkout scm: [$class          : 'GitSCM',
                    useRemoteConfigs: [[url: gitRepoUrl]],
-                   branches        : [[name: "refs/tags/v${releaseVersion}"]]],
+                   branches        : [[name: "refs/tags/v${docVersion}"]]],
             changelog: false, poll: false
 
     if (docgenScript == null) {
