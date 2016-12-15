@@ -36,8 +36,6 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
-            sh "echo gh-pages exists ? ${refGHPages}"
-
             if (refGHPages?.trim()) {
                 sh 'git clone -b gh-pages ' + gitRepoUrl + ' gh-pages'
                 sh 'cp -rv target/generated-docs/* gh-pages/'
