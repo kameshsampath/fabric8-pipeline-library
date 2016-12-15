@@ -24,17 +24,28 @@ def call(body) {
                 changelog: false, poll: false
 
         if (docgenScript == null) {
+            //if no profiles are passed we will try running doc-html, doc-pdf
             if (profiles == null) {
                 sh 'mvn -Pdoc-html,doc-pdf'
             } else {
                 def argProfile = '-P' + profiles.join(",")
                 sh "mvn ${argProfile}"
             }
-            //TODO - check if gh-pages already exist if not create it ??
-            sh 'git clone -b gh-pages' + gitRepoUrl + ' gh-pages'
-            sh 'cp -rv target/generated-docs/* gh-pages/'
-            sh 'cd gh-pages'
-            sh 'mv index.pdf ' + artifactId + '.pdf'
+
+            def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
+                    returnStdout: true).toString().trim()
+
+            if (refGHPages) {
+                sh 'git clone -b gh-pages' + gitRepoUrl + ' gh-pages'
+                sh 'cp -rv target/generated-docs/* gh-pages/'
+                sh 'cd gh-pages'
+                sh 'mv index.pdf ' + artifactId + '.pdf'
+            } else {
+                sh 'git checkout -b gh-pages'
+                sh 'cp -rv target/generated-docs/* .'
+                sh 'mv index.pdf ' + artifactId + '.pdf'
+            }
+
             sh 'git add --ignore-errors *'
             sh 'git commit -m "generated documentation'
             sh 'git push origin gh-pages'
