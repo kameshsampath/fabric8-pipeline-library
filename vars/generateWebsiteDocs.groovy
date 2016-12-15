@@ -45,7 +45,8 @@ def call(body) {
                 sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
                         'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
 
-                sh "cd gh-pages && (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
+                sh "cd gh-pages && git config user.email ${gitEmail} && git config user.name ${gitUser} " +
+                        "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
 
                 retry(3) {
                     sh "cd gh-pages && git push --verbose origin gh-pages"
@@ -57,7 +58,8 @@ def call(body) {
 
                 sh 'cp -rv target/generated-docs/* .'
 
-                sh "(git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
+                sh "git config user.email ${gitEmail} && git config user.name ${gitUser} && " +
+                        "(git add --ignore-errors * || true ) && git commit -m 'generated documentation' " +
                         "&& git push origin gh-pages"
             }
 
