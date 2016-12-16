@@ -38,6 +38,8 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
+            def workspace = pwd()
+
             def ghPagesDir = "gh-pages"
 
             if (refGHPages?.trim()) {
@@ -45,7 +47,7 @@ def call(body) {
                 sh "git clone -b gh-pages  ${gitRepoUrl} ${ghPagesDir}"
 
                 dir(ghPagesDir) {
-                    sh "cp -rv ../target/generated-docs/* ."
+                    sh "cp -rv ${workspace}/target/generated-docs/* ."
                     sh "mv ./index.pdf  ./${artifactId}.pdf"
                     sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
                     sh "git add --ignore-errors * || true "
