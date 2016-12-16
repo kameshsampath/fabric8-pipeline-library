@@ -46,9 +46,8 @@ def call(body) {
 
                 sh "mkdir -p ${workspace}/${ghPagesDir}"
 
-                sh "git clone -b gh-pages  ${gitRepoUrl} ${workspace}/${ghPagesDir}"
-
-                dir("${workspace}/${ghPagesDir}") {
+                dir("${ghPagesDir}") {
+                    sh "git clone -b gh-pages  ${gitRepoUrl} ."
                     sh "cp -rv ${workspace}/target/generated-docs/* ."
                     sh "mv ./index.pdf  ./${artifactId}.pdf"
                     sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
