@@ -28,7 +28,7 @@ def call(body) {
 
         if (docgenScript == null) {
             //if no profiles are passed we will try running doc-html, doc-pdf
-            if (profiles == null ) {
+            if (profiles == null) {
                 sh('mvn -Pdoc-html && mvn -Pdoc-pdf')
             } else {
                 def mvnCmd = 'mvn -P' + profiles.join(" && mvn -P")
@@ -49,13 +49,13 @@ def call(body) {
                 sh "git clone -b gh-pages  ${gitRepoUrl} ${workspace}/${ghPagesDir}"
 
                 dir(ghPagesDir) {
-                    sh "cp -rv ${workspace}/target/generated-docs/* ."
-                    sh "mv ./index.pdf  ./${artifactId}.pdf"
-                    sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
-                    sh "git add --ignore-errors * || true "
-                    sh "git commit -m 'generated documentation'"
 
                     retry(3) {
+                        sh "cp -rv ${workspace}/target/generated-docs/* ."
+                        sh "mv ./index.pdf  ./${artifactId}.pdf"
+                        sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
+                        sh "git add --ignore-errors * || true "
+                        sh "git commit -m 'generated documentation'"
                         sh "git push origin gh-pages"
                     }
                 }
