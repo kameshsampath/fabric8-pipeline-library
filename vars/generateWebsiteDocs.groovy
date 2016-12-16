@@ -47,7 +47,7 @@ def call(body) {
                 sh "cp -rv target/generated-docs/* ${ghPagesDir}"
 
                 dir(ghPagesDir) {
-                    sh "mv index.pdf  ${artifactId}.pdf"
+                    sh "mv index.pdf  ${artifactId}.pdf 2>/dev/null"
                     sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
                     sh "git add --ignore-errors * || true "
                     sh "git commit -m 'generated documentation'"
