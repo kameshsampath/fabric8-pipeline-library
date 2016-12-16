@@ -15,7 +15,7 @@ def call(body) {
     def gitEmail = config.gitEmail ?: "fabric8-admin@googlegroups.com"
 
     //Array of Maven Profiles
-    def profiles
+    def profiles = config.profiles ?: []
 
     def gitRepoUrl = "git@github.com:${project}.git"
 
@@ -38,18 +38,27 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
+            def workspace = pwd()
+
+            def ghPagesDir = "${workspace}/gh-pages"
+
+            sh "mkdir -p ${ghPagesDir}"
+
             if (refGHPages?.trim()) {
 
                 sh "git clone -b gh-pages  ${gitRepoUrl} gh-pages"
 
-                sh 'cp -rv target/generated-docs/* gh-pages/ && ' +
-                        'cd gh-pages && mv index.pdf ' + artifactId + '.pdf'
+                sh "cp -rv target/generated-docs/* ${ghPagesDir}"
 
-                sh "cd gh-pages && git config user.email ${gitEmail} && git config user.name ${gitUser} " +
-                        "&& (git add --ignore-errors * || true ) && git commit -m 'generated documentation' "
+                dir(ghPagesDir) {
+                    sh "mv index.pdf  ${artifactId}.pdf"
+                    sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
+                    sh "git add --ignore-errors * || true "
+                    sh "git commit -m 'generated documentation'"
 
-                retry(3) {
-                    sh "cd gh-pages && git push --verbose origin gh-pages"
+                    retry(3) {
+                        sh "git push origin gh-pages"
+                    }
                 }
 
             } else {
