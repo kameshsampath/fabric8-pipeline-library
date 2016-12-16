@@ -38,13 +38,15 @@ def call(body) {
             def refGHPages = sh(script: 'git rev-parse --abbrev-ref --glob=\'refs/remotes/origin/gh-pages*\'',
                     returnStdout: true).toString().trim()
 
-            def workspace = pwd()
-
-            def ghPagesDir = "gh-pages"
-
             if (refGHPages?.trim()) {
 
-                sh "git clone -b gh-pages  ${gitRepoUrl} ${ghPagesDir}"
+                def workspace = pwd()
+
+                def ghPagesDir = "gh-pages"
+
+                sh "mkdir -p ${workspace}/${ghPagesDir}"
+
+                sh "git clone -b gh-pages  ${gitRepoUrl} ${workspace}/${ghPagesDir}"
 
                 dir(ghPagesDir) {
                     sh "cp -rv ${workspace}/target/generated-docs/* ."
