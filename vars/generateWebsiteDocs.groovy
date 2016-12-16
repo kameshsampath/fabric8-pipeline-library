@@ -15,7 +15,7 @@ def call(body) {
     def gitEmail = config.gitEmail ?: "fabric8-admin@googlegroups.com"
 
     //Array of Maven Profiles
-    def profiles = config.profiles ?: []
+    def profiles = config.profiles ?: null
 
     def gitRepoUrl = "git@github.com:${project}.git"
 
@@ -28,7 +28,7 @@ def call(body) {
 
         if (docgenScript == null) {
             //if no profiles are passed we will try running doc-html, doc-pdf
-            if (profiles == null) {
+            if (profiles == null ) {
                 sh('mvn -Pdoc-html && mvn -Pdoc-pdf')
             } else {
                 def mvnCmd = 'mvn -P' + profiles.join(" && mvn -P")
