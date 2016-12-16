@@ -46,15 +46,14 @@ def call(body) {
 
                 sh "mkdir -p ${workspace}/${ghPagesDir}"
 
-                dir("${ghPagesDir}") {
-                    sh "git clone -b gh-pages  ${gitRepoUrl} ."
-                    sh "cp -rv ${workspace}/target/generated-docs/* ."
-                    sh "mv ./index.pdf  ./${artifactId}.pdf"
-                    sh "git config user.email ${gitEmail} && git config user.name ${gitUser} "
-                    sh "git add --ignore-errors * || true "
-                    sh "git commit -m 'generated documentation'"
-                    sh "git push origin gh-pages"
-                }
+                sh "git clone -b gh-pages  ${gitRepoUrl} ${workspace}/${ghPagesDir}"
+                sh "cp -rv ${workspace}/target/generated-docs/* ${workspace}/${ghPagesDir}/."
+                sh "mv ${workspace}/${ghPagesDir}/index.pdf  ${workspace}/${ghPagesDir}/${artifactId}.pdf"
+                sh "cd ${workspace}/${ghPagesDir} && git config user.email ${gitEmail} " +
+                        " && git config user.name ${gitUser} " +
+                        " && git add --ignore-errors * || true " +
+                        " && git commit -m 'generated documentation'" +
+                        " && git push origin gh-pages"
 
             } else {
 
